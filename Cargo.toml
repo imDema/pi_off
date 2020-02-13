@@ -3,6 +3,7 @@ name = "pi_off"
 version = "0.1.0"
 authors = ["imDema <luca.de.martini@protonmail.com>"]
 edition = "2018"
+license = "GPL3"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -11,3 +12,13 @@ rppal = "0.11"
 
 [profile.release]
 lto = true
+
+[package.metadata.deb]
+extended-description = """pi_off: Power off by closing pins GPIO37 and GPIO39 (BCM26 and GROUND)"""
+section = "utility"
+priority = "optional"
+depends = "$auto, systemd"
+assets = [
+    ["target/armv7-unknown-linux-gnueabihf/release/pi_off", "usr/bin/", "755"],
+    ["systemd/pi_off.service", "etc/systemd/system/", "644"],
+]

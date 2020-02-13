@@ -1,5 +1,3 @@
-extern crate rppal;
-
 use std::error::Error;
 use std::process::Command;
 use rppal::gpio::{Gpio, Trigger, Level};
@@ -7,17 +5,26 @@ use rppal::gpio::{Gpio, Trigger, Level};
 const GPIO_SWITCH : u8 = 26; //Pin 37 BCM 26
 
 fn main() -> Result<(), Box<dyn Error>> {
+    // Setup pin
     let gpio = Gpio::new()?;
     let mut pin = gpio.get(GPIO_SWITCH)?.into_input();
-    pin.set_interrupt(Trigger::FallingEdge)?;
     
+    // Setup interrupt and wait
+    pin.set_interrupt(Trigger::FallingEdge)?;
     let int = pin.poll_interrupt(true, None)?;
+
+    // Handle FallingEdge event
     println!("Registered event: {:?}", &int);
     if let Some(Level::Low) = int {
-        println!("Starting shutdown!");
-        Command::new("shutdown")
-            .args(&["-h", "now"])
-            .spawn()?;
+        shutdown()?;
     }
     Ok(())
+}
+
+fn shutdown() -> Result<(), std::io::Error> {
+    println!("Running `shutdown -h now`");
+    Command::new("shutdown")
+        .args(&["-h", "now"])
+        .spawn()
+        .map(|_|())
 }

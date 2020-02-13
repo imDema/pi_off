@@ -1,0 +1,11 @@
+[Unit]
+Description=Power off by closing pins GPIO37 and GPIO39 (BCM26 and GROUND)
+
+[Service]
+ExecStart=/usr/bin/pi_off
+Type=simple
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
